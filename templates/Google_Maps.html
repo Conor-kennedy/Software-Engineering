@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="initial-scale=1.0"> 
+    <meta charset="utf-8">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <title>Simple Map</title>
+    <!--- <link rel="stylesheet" href="style2.css"> --->
+
+    <style>
+    /* Always set the map height explicitly to define the size of the div 
+       * element that contains the map. */ 
+      #map { 
+        height: 100%; 
+      } 
+      /* Optional: Makes the sample page fill the window. */ 
+      html, body { 
+        height: 100%; 
+        margin: 0; 
+        padding: 0; 
+      } 
+    </style>
+    </head> 
+    
+    <body> 
+
+    <!---Div for the map-->
+    <div id="map"></div> 
+
+
+    <script> 
+      var map; 
+      var infoWindow = null;
+      
+
+      //Function that shows map with markers at each station
+      function initMap() { 
+
+        //calls the flask function for '/stations' and returns the data as JSON
+        fetch("/stations").then(Response => {
+          return Response.json();
+          //JSON returned is 'data' variable
+        }).then(data => {
+          //log data in console
+          console.log("data: ", data);
+          //google map variable displayed in map div
+        map = new google.maps.Map(document.getElementById('map'), { 
+          center: {lat: 53.3498, lng: -6.2603}, 
+          zoom: 13 
+         }); 
+
+         //for each element in 'data' 
+        data.forEach(station => {
+          //create a google maps marker using the latitude and longitude for each station
+          var marker = new google.maps.Marker({
+            position: {lat: parseFloat(station[5]), lng: parseFloat(station[6])},
+            map,
+            title: station[0],
+          });
+
+
+          //open infowindow for a station when it's clicked
+          marker.addListener('click', () => {
+
+          //if a popup is open, close it
+          if (infoWindow) {
+            infoWindow.close();
+      }
+
+      //create a new popup window
+      infoWindow = new google.maps.InfoWindow();
+          
+
+            //get most recent data for the relevant station from 'Bikes' table
+            fetch("/bikes/" + station[0]).then(Response => {
+          return Response.json();
+          //JSON returned is 'bikeData' variable
+        }).then(bikeData => {
+
+          var ts = Math.round((new Date()).getTime() / 1000);
+          console.log("currenttime", ts)
+
+          var unix_timestamp = bikeData[0][3]
+
+          console.log("last updated", unix_timestamp)
+          
+          var difference = ts - unix_timestamp;
+
+          console.log("differnce:", difference)
+
+          var minutes_ago = Math.round(((difference / 60)));
+
+          console.log(minutes_ago)
+
+          var new_date = new Date(minutes_ago * 1000);
+
+          console.log("newnew", minutes_ago)
+
+          console.log(minutes_ago)
+          // Create a new JavaScript Date object based on the timestamp
+          // multiplied by 1000 so that the argument is in milliseconds, not seconds.
+          var date = new Date(unix_timestamp * 1000);
+          // Hours part from the timestamp
+          var hours = date.getHours();
+          // Minutes part from the timestamp
+          var minutes = "0" + date.getMinutes();
+          // Seconds part from the timestamp
+          var seconds = "0" + date.getSeconds();
+
+          // Will display time in 10:30:23 format
+          var formattedTime = hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
+
+          //set the information in the popup window to the most recent data from the query results 
+            infoWindow.setContent('<div><h1>' + bikeData[0][0] + '</div></h1>' + 
+            '<div><h3> Available Bikes: ' + bikeData[0][1] + '</div></h3>' + 
+            '<div><h3> Available Stands: ' + bikeData[0][2] + '</div></h3>' + 
+            '<div><h3> Last Updated: ' + formattedTime + '</div></h3>' + 
+            '<div><h3> Last Updated: ' + minutes_ago + ' minutes ago</div></h3>' +
+            '<div><h3> Status: ' + bikeData[0][4] + '</div></h3>'
+            );
+
+            infoWindow.open({
+            anchor: marker,
+            map,
+            shouldFocus: false,
+            });
+          });
+        });
+      });
+      }).catch(err => {
+        console.log("OOPS!", err);
+      }) 
+    }
+
+    </script> 
+
+    <!--Map API that also calls the initMap function-->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB3EaJGUGTaYPhUxTEAB9VUc5awPYZ-N-I&callback=initMap" 
+    async defer></script> 
+
+  </body> 
+</html>
+  
