@@ -71,9 +71,10 @@
       //create a new popup window
       infoWindow = new google.maps.InfoWindow();
           
-
+      //replace '/' in station address for 'Princes Street / O'Connell Street' so the URL works
+      var statName = station[0].replace('/', '!')
             //get most recent data for the relevant station from 'Bikes' table
-            fetch("/bikes/" + station[0]).then(Response => {
+            fetch("/bikes/" + statName).then(Response => {
           return Response.json();
           //JSON returned is 'bikeData' variable
         }).then(bikeData => {
