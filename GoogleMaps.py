@@ -44,9 +44,9 @@ def bikes(stationName):
     query = """SELECT * FROM Bikes WHERE Address = %s ORDER BY Updated DESC LIMIT 1"""
 
     #put '/' back in station address for 'Princes Street / O'Connell Street' for the query
-    x = stationName.replace("!", "/")
+    statName = stationName.replace("!", "/")
 
-    tup = [x]
+    tup = [statName]
     
     mycursor = mydb.cursor()    
     mycursor.execute(query, tup)
