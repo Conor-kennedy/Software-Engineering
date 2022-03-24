@@ -31,6 +31,7 @@ def station():
     response = jsonify(myresult)
     return response
 
+#function that connects to database, queries the 'Bikes' table and returns the results as JSON
 @app.route("/bikes/<stationName>")
 def bikes(stationName):
     #Connect to dBikes database.   'mycursor' used to execute database commands.
