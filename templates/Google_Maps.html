@@ -13,6 +13,8 @@
       #map { 
         height: 80%; 
         width: 80%;
+        margin-left: auto;
+        margin-right: auto;
       } 
       /* Optional: Makes the sample page fill the window. */ 
       html, body { 
@@ -20,16 +22,42 @@
         margin: 0; 
         padding: 0; 
       } 
+
+      h1 {
+        text-align: center;
+      }
+
+      #dropdown {
+        text-align: center;
+      }
+
+
+      
     </style>
     </head> 
     
     <body> 
 
+    <h1>Dublin Bikes App</h1>
+
     <!---Div for the map-->
     <div id="map"></div> 
+    
+    <br>
+
+    <div id="dropdown">
+      <div id="choose_station"></div>
+
+      <br>
+    </div>
+
+    <footer>
+      <hr>
+    </footer>
        
     <script> 
 
+      DropDown();
       var map; 
       var infoWindow = null;
       
@@ -133,6 +161,29 @@
         console.log("OOPS!", err);
       }) 
     }
+
+    // Function to populate the select dropdown menu for possible dates
+    //******should be put into alphabetical order******
+    function DropDown() {
+      
+      fetch("/stations").then(response => {
+        return response.json();
+      }).then(data => {
+
+      var station_choice = "<label for='station_option'>Choose a station: </label>"
+      + "<select name='station_option' id='station_option' onchange='setValue(this)'>"
+      + "<option value='' disabled selected> ----------------------------------------------- </option><br>";
+
+      data.forEach(station => {
+          station_choice += "<option value=" + station[0] + ">" + station[0] + "</option><br>";
+      })
+
+      station_choice += "</select>";
+      document.getElementById("choose_station").innerHTML = station_choice;
+      }).catch(err => {
+          console.log("Error:", err);
+      })
+      }
 
     </script> 
 
