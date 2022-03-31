@@ -1,19 +1,26 @@
 from distutils.log import debug
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, make_response
 from jinja2 import Template
 import mysql.connector
+import requests
 
 app = Flask(__name__, static_url_path='')
 
 #function to test url works
-@app.route("/hello")
-def hello():
-   return "Hello world"
+@app.route("/hello/<stationName>")
+def hello(stationName):
+    stat = bikes(stationName).get_json()
+    return render_template('test.html', stat = stat)
+
+@app.route("/test")
+def test():
+    return render_template('test2.html')
 
 #function for the home page that shows the map
 @app.route("/map")
 def index():
-    return render_template('Google_Maps.html')
+    stat = station().get_json()
+    return render_template('Google_Maps.html', stat = stat)
 
 #function that connects to database, queries the 'Station' table and returns the results as JSON
 @app.route("/stations")
@@ -41,7 +48,7 @@ def bikes(stationName):
     password="30830Group20",
     database="dBikes")
 
-    query = """SELECT * FROM Bikes WHERE Address = %s ORDER BY Updated DESC LIMIT 1"""
+    query = """SELECT * FROM Bikes WHERE Address = %s ORDER BY Updated DESC"""
 
     #put '/' back in station address for 'Princes Street / O'Connell Street' for the query
     statName = stationName.replace("!", "/")
@@ -53,6 +60,7 @@ def bikes(stationName):
     myresult = mycursor.fetchall()
     response = jsonify(myresult)
     return response
+
 
 if __name__ == "__main__":
     app.run(debug=True)

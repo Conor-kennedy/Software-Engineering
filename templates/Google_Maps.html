@@ -4,193 +4,437 @@
     <meta name="viewport" content="initial-scale=1.0"> 
     <meta charset="utf-8">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+   
+    <script src="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
+    <link href="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.css" rel="stylesheet" type="text/css" />
+    
     <title>Simple Map</title>
     <!--- <link rel="stylesheet" href="style2.css"> --->
 
     <style>
-    /* Always set the map height explicitly to define the size of the div 
-       * element that contains the map. */ 
-      #map { 
-        height: 80%; 
-        width: 80%;
-        margin-left: auto;
-        margin-right: auto;
-      } 
-      /* Optional: Makes the sample page fill the window. */ 
-      html, body { 
-        height: 100%; 
-        margin: 0; 
-        padding: 0; 
-      } 
+        /* Always set the map height explicitly to define the size of the div 
+        * element that contains the map. */ 
+        #map { 
+            height: 80%; 
+            width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+        } 
+        /* Optional: Makes the sample page fill the window. */ 
+        html, body { 
+            height: 100%; 
+            margin: 0; 
+            padding: 0; 
+        } 
 
-      h1 {
-        text-align: center;
-      }
+        h1, h3, .daily-bar, .hourly-bar  {
+            text-align: center;
+        }
 
-      #dropdown {
-        text-align: center;
-      }
+        #dropdown {
+            text-align: center;
+        }
+
+        .charts {
+            margin: auto;
+            width: 90%;
+            align-content: center;
+        }
 
 
-      
+
     </style>
-    </head> 
+</head> 
     
-    <body> 
+<body> 
 
     <h1>Dublin Bikes App</h1>
 
-    <!---Div for the map-->
-    <div id="map"></div> 
-    
-    <br>
-
-    <div id="dropdown">
-      <div id="choose_station"></div>
-
-      <br>
+    <!---Div for the charts-->
+    <div class = "charts">
+        <div class="daily-bar"></div>
+        <div class="hourly-bar"></div>
     </div>
 
-    <footer>
-      <hr>
-    </footer>
+    <!---Div for the map-->
+    <div id="map"></div> 
+
+    <!---Div for the user selection-->
+    <div id="dropdown">   
+        
+        <br>
+
+        <div id="choose_start"></div>
+
+        <br>
+
+        <div id="choose_destination"></div>
+
+        <br>
+
+        <div id="choose_day"></div>
+
+        <br>
+
+        <div id="choose_hour"></div>
+
+        <br>
+
+        <div id="button"></div>
+
+        <button onclick="buttonClick(index)">Click me</button>
+
+        <br>
+
+    </div>
+    
+<footer>
+    <hr>
+</footer>
        
-    <script> 
+<script> 
 
-      DropDown();
-      var map; 
-      var infoWindow = null;
-      
+//***
+//GLOBAL VARIABLES
+//***
 
-      //Function that shows map with markers at each station
-      function initMap() { 
+var map; //map variable
+var infoWindow = null; //popup window variable
+var weekDays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]; //array to populate dropdown list
+var hourly = ['12am', '1am', '2am', '3am', '4am', '5am', '6am', '7am', '8am', '9am', '10am', '11am', '12pm', '1pm',
+              '2pm', '3pm', '4pm', '5pm', '6pm', '7pm', '8pm', '9pm', '10pm', '11pm']; //new array for labels
+var ts = Math.round((new Date()).getTime() / 1000); //time at loading
+var gMarkers = []; //array to store google maps markers
+var station = JSON.parse('{{ stat | tojson | safe}}'); //variable contataining static data
+var index; //variable to index array when using button to select marker
 
-        //calls the flask function for '/stations' and returns the data as JSON
-        fetch("/stations").then(Response => {
-          return Response.json();
-          //JSON returned is 'data' variable
-        }).then(data => {
-          //log data in console
-          console.log("data: ", data);
-          //google map variable displayed in map div
-        map = new google.maps.Map(document.getElementById('map'), { 
-          center: {lat: 53.3498, lng: -6.2603}, 
-          zoom: 13 
-         }); 
+//set chartDay to the current day if not already set
+if (!chartDay){
+    var chartDay = (new Date(ts*1000)).getDay();
+}
 
-         //for each element in 'data' 
-        data.forEach(station => {
-          //create a google maps marker using the latitude and longitude for each station
-          var marker = new google.maps.Marker({
-            position: {lat: parseFloat(station[5]), lng: parseFloat(station[6])},
+
+//***
+//FUNCTION TO CREATE MAP WITH STATION MARKERS
+//***
+function initMap() { 
+
+    //google map variable displayed in map div
+    map = new google.maps.Map(document.getElementById('map'), { 
+        center: {lat: 53.3498, lng: -6.2603}, 
+        zoom: 13 
+    }); 
+
+    //for each station 
+    for (let s = 0; s < station.length; s++) { 
+        //create a google maps marker using the latitude and longitude for each station
+        var marker = new google.maps.Marker({
+            position: {lat: parseFloat(station[s][5]), lng: parseFloat(station[s][6])},
             map,
-            title: station[0],
-          });
-
-
-          //open infowindow for a station when it's clicked
-          marker.addListener('click', () => {
-
-          //if a popup is open, close it
-          if (infoWindow) {
-            infoWindow.close();
-      }
-
-      //create a new popup window
-      infoWindow = new google.maps.InfoWindow();
-          
-      //replace '/' in station address for 'Princes Street / O'Connell Street' so the URL works
-      var statName = station[0].replace('/', '!')
-            //get most recent data for the relevant station from 'Bikes' table
-            fetch("/bikes/" + statName).then(Response => {
-          return Response.json();
-          //JSON returned is 'bikeData' variable
-        }).then(bikeData => {
-
-          var ts = Math.round((new Date()).getTime() / 1000);
-          console.log("currenttime", ts)
-
-          var unix_timestamp = bikeData[0][3]
-
-          console.log("last updated", unix_timestamp)
-          
-          var difference = ts - unix_timestamp;
-
-          console.log("differnce:", difference)
-
-          var minutes_ago = Math.round(((difference / 60)));
-
-          console.log(minutes_ago)
-
-          var new_date = new Date(minutes_ago * 1000);
-
-          console.log("newnew", minutes_ago)
-
-          console.log(minutes_ago)
-          // Create a new JavaScript Date object based on the timestamp
-          // multiplied by 1000 so that the argument is in milliseconds, not seconds.
-          var date = new Date(unix_timestamp * 1000);
-          // Hours part from the timestamp
-          var hours = date.getHours();
-          // Minutes part from the timestamp
-          var minutes = "0" + date.getMinutes();
-          // Seconds part from the timestamp
-          var seconds = "0" + date.getSeconds();
-
-          // Will display time in 10:30:23 format
-          var formattedTime = hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
-
-          //set the information in the popup window to the most recent data from the query results 
-            infoWindow.setContent('<div><h1>' + bikeData[0][0] + '</div></h1>' + 
-            '<div><h3> Available Bikes: ' + bikeData[0][1] + '</div></h3>' + 
-            '<div><h3> Available Stands: ' + bikeData[0][2] + '</div></h3>' + 
-            '<div><h3> Last Updated: ' + formattedTime + '</div></h3>' + 
-            '<div><h3> Last Updated: ' + minutes_ago + ' minutes ago</div></h3>' +
-            '<div><h3> Status: ' + bikeData[0][4] + '</div></h3>'
-            );
-
-            infoWindow.open({
-            anchor: marker,
-            map,
-            shouldFocus: false,
-            });
-          });
+            title: station[s][0],
         });
-      });
-      }).catch(err => {
-        console.log("OOPS!", err);
-      }) 
+  
+        //push marker to the array
+        gMarkers.push(marker);
+              
+//***
+//FUNCTION FOR WHEN A MARKER IS CLICKED, WHICH WILL QUERY THE 'BIKES' TABLE AND OPEN A POPUP WINDOW
+//***
+        marker.addListener('click', () => {
+
+            var stat = station[s][0]; //station name
+
+            //zoom in and re-centre map around selected station 
+            map.setZoom(15);
+            map.panTo(gMarkers[s].getPosition());
+
+            //set the selected value of the dropdown to the clicked station
+            setValue(s);
+
+            //if a popup is open, close it
+            if (infoWindow) {
+                infoWindow.close();
+            }
+    
+            //create a new popup window
+            infoWindow = new google.maps.InfoWindow();
+        
+            //replace '/' in station address for 'Princes Street / O'Connell Street' so the URL works
+            var statName = station[s][0].replace('/', '!')
+
+
+//***
+//QUERY 'BIKES' TABLE AND RETURN ALL ROWS FOR SELECTED STATION
+//***
+            fetch("/bikes/" + statName).then(Response => {
+                return Response.json();
+            //each row returned returned is 'bikeData' variable
+            }).then(bikeData => {
+
+                //open the pop up window for the selected marker
+                infoWindow.open({
+                    anchor: gMarkers[s],
+                    map,
+                    shouldFocus: false,
+                });
+
+                var now = Math.round((new Date()).getTime() / 1000); //time at clicking station
+                var unix_timestamp = bikeData[0][3]; //station updated timestamp
+                var difference = now - unix_timestamp; //time elapsed since updated
+                var minutes_ago = Math.round(((difference / 60))); 
+                var new_date = new Date(minutes_ago * 1000); //convert time elapsed to date
+
+
+                // Create a new JavaScript Date object based on the timestamp
+                // multiplied by 1000 so that the argument is in milliseconds, not seconds.
+                var date = new Date(unix_timestamp * 1000);
+
+                // Hours part from the timestamp
+                var hours = date.getHours();
+                // Minutes part from the timestamp
+                var minutes = "0" + date.getMinutes();
+                // Seconds part from the timestamp
+                var seconds = "0" + date.getSeconds();
+
+                // Will display time in 10:30:23 format
+                var formattedTime = hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
+
+                //set the information in the popup window to the most recent data from the query results 
+                infoWindow.setContent('<div><h1>' + bikeData[0][0] + '</div></h1>' + 
+                '<div><h3> Available Bikes: ' + bikeData[0][1] + '</div></h3>' + 
+                '<div><h3> Available Stands: ' + bikeData[0][2] + '</div></h3>' + 
+                '<div><h3> Last Updated: ' + formattedTime + '</div></h3>' + 
+                '<div><h3> Now: ' + new Date(now*1000) + '</div></h3>' + 
+                '<div><h3> Last Updated: ' + minutes_ago + ' minutes ago</div></h3>' +
+                '<div><h3> Status: ' + bikeData[0][4] + '</div></h3>'
+                );
+
+                //initialise objects for bike data to be used in for graphs
+                var dailyBikes = {};
+                var hourlyBikes = {};
+
+                //initialise arrays to get averages for each day and each hour
+                var averageDailyBikes = [];
+                var averageHourlyBikes = [];
+
+                var numRows = Object.keys(bikeData).length; //check amount of rows for that station
+                
+                //add an array, using each weekday as a key in the dailyBikes object
+                for (let i = 0; i < weekDays.length; i++) {
+                    dailyBikes[weekDays[i]] = [];
+                }
+
+                //add an array, using each hour as a key in the hourlyBikes object
+                for (let h = 0; h <= 23; h++) {
+                    hourlyBikes[h] = [];
+                }
+
+                //for each row returned, get the updated time, the day of the update and hour of the update
+                bikeData.forEach(bikeTime => {
+                    var bikeDate = new Date(bikeTime[3] * 1000); // time of update
+                    var day = bikeDate.getDay(); // day of update
+                    var hour = bikeDate.getHours(); // hour of update
+
+                    //add the number of bikes to the dailybikes object, depending on the day of update
+                    dailyBikes[weekDays[day]].push(bikeTime[1]); 
+
+                    //check if the day of the update is the same as the day selected in the dropdown box
+                    //and push the number of bikes at this time to the hourlyBikes object depending on the hour of update
+                    if (day == chartDay){
+                        hourlyBikes[hour].push(bikeTime[1]);
+                    }
+                });
+        
+                // //calculate the average number of bikes for each day of the week
+                for (let x = 0; x < weekDays.length; x++) {
+                    var sum = dailyBikes[weekDays[x]].reduce((accumulator, curr) => parseInt(accumulator) + parseInt(curr));
+                    var len = dailyBikes[weekDays[x]].length;
+                    averageDailyBikes.push(sum/len);
+                }
+        
+                //calculate the average number of bikes for each hour of the day selected by the dropdown
+                for (let y = 0; y <= 23; y++) {
+                    var sum1 = hourlyBikes[y].reduce((accumulator, curr) => parseInt(accumulator) + parseInt(curr));
+                    var len1 = hourlyBikes[y].length;
+                    averageHourlyBikes.push(Math.round(sum1/len1));
+                }
+
+//***
+//CREATE CHARTS FOR AVERAGE DATA
+//***
+                //create a bar chart of average bikes available per day
+                new Chartist.Bar('.daily-bar', {
+                    labels: weekDays,
+                        series: [ averageDailyBikes ]
+                    }, 
+                    { width: 1280, height: 480
+                    });
+        
+                //create a line chart of average bikes available per hour, per day selected
+                new Chartist.Line('.hourly-bar', {
+                    labels: hourly,
+                    series: [ averageHourlyBikes ]
+                    },
+                    { width: 1280, height: 480, low: 0, showArea: true
+                    });
+            });
+        });
+    }
+    
+    startDropDown();
+    destinationDropDown();
+
+}
+
+//***
+//FUNCTION TO CREATE DROPDOWN TO SELECT START STATION
+//***
+function startDropDown() {
+
+    //HTML for dropdown menu, implement 'setValue(marker number)' function on change
+    var station_choice = "<label for='station_option'>Starting Location: </label>"
+    + "<select name='station_option' id='station_option' onchange='setValue(this)'>"
+    + "<option value='' disabled selected> ----------------------------------------------- </option><br>";
+
+    //populate dropdown with station names
+    for (let m = 0; m < station.length; m++){
+        station_choice += "<option value=" + m + ">" + gMarkers[m].getTitle() + "</option><br>";
+    };
+
+    station_choice += "</select>";
+
+    document.getElementById("choose_start").innerHTML = station_choice;
+}
+
+//***
+//FUNCTION TO CREATE DROPDOWN TO SELECT DESTINATION STATION
+//***
+function destinationDropDown() {
+
+// //HTML for dropdown menu, implement 'setValue(marker number)' function on change
+var station_choice = "<label for='destination_option'>Destination: </label>"
++ "<select name='destination_option' id='destination_option' onchange=''>"
++ "<option value='' disabled selected> ----------------------------------------------- </option><br>";
+
+//populate dropdown with station names
+for (let m = 0; m < station.length; m++){
+    station_choice += "<option value=" + m + ">" + gMarkers[m].getTitle() + "</option><br>";
+};
+
+station_choice += "</select>";
+
+document.getElementById("choose_destination").innerHTML = station_choice;
+}
+
+//***
+//FUNCTION TO CREATE DROPDOWN WITH A LIST OF DAYS
+//***
+function DailyDropDown() {
+    
+    //HTML for dropdown menu, implement 'setDays(weekday number)' function on change
+    var day_choice = "<label for='day_option'>Choose a day: </label>"
+    + "<select name='day_option' id='day_option' onchange='setDays(this)'>"
+    + "<option value='' disabled selected> ----------------------------------------------- </option><br>";
+      
+    //populate dropdown with weekdays   
+    for (let w = 0; w < weekDays.length; w++){
+        day_choice += "<option value=" + w + ">" + weekDays[w] + "</option><br>";
+    };
+
+    day_choice += "</select>";
+
+    document.getElementById("choose_day").innerHTML = day_choice;
+}
+
+//***
+//FUNCTION TO CREATE DROPDOWN WITH A LIST OF HOURS
+//***
+function HourlyDropDown() {
+        
+    var hour_choice = "<label for='hour_option'>Choose an hour: </label>"
+    + "<select name='hour_option' id='hour_option' onchange='setHours(this)'>"
+    + "<option value='' disabled selected> ----------------------------------------------- </option><br>";
+     
+    //populate dropdown with weekdays  
+    for (let t = 0; t < hourly.length; t++){
+        hour_choice += "<option value=" + t + ">" + hourly[t] + "</option><br>";
+    };
+
+    hour_choice += "</select>";
+
+    document.getElementById("choose_hour").innerHTML = hour_choice;
+}
+
+//***
+//FUNCTION TO SELECT THE VALUE OF THE STATION DROPDOWN, THAT TAKES INPUT FROM THE CLICKED MARKER OR
+//FROM THE STATION DROPDOWN SELECTION
+//***
+function setValue(ele1){
+
+    var n;
+
+    //check input type is a number type
+    if (typeof(ele1) != "number"){
+        n = ele1.value;
+    }else {
+        n = ele1;
     }
 
-    // Function to populate the select dropdown menu for possible dates
-    //******should be put into alphabetical order******
-    function DropDown() {
-      
-      fetch("/stations").then(response => {
-        return response.json();
-      }).then(data => {
+    //assign input as selected value for daily dropdown menu
+    document.getElementById('station_option').value = n;
 
-      var station_choice = "<label for='station_option'>Choose a station: </label>"
-      + "<select name='station_option' id='station_option' onchange='setValue(this)'>"
-      + "<option value='' disabled selected> ----------------------------------------------- </option><br>";
+    //set index for marker to be selected using buttonClick()
+    index = n;
 
-      data.forEach(station => {
-          station_choice += "<option value=" + station[0] + ">" + station[0] + "</option><br>";
-      })
+}
 
-      station_choice += "</select>";
-      document.getElementById("choose_station").innerHTML = station_choice;
-      }).catch(err => {
-          console.log("Error:", err);
-      })
-      }
 
-    </script> 
+//***
+//FUNCTION TO SELECT THE VALUE OF THE DAILY DROPDOWN, THAT TAKES INPUT AS THE CURRENT DAY
+//OR FROM THE DAILY DROPDOWN SELECTION
+//***
+function setDays(ele2){
+  
+    var n;
 
-    <!--Map API that also calls the initMap function-->
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB3EaJGUGTaYPhUxTEAB9VUc5awPYZ-N-I&callback=initMap" 
-    async defer></script> 
+    //check input type is a number type
+    if (typeof(ele2) != "number"){
+        n = ele2.value;
+    }else {
+        n = ele2;
+    }
 
-  </body> 
+    //assign input as selected value for daily dropdown menu
+    document.getElementById('day_option').value = n;
+
+    //change selected day for the charts as the input
+    chartDay = n;
+}
+
+//***
+//FUNCTION TO CLICK A STATION MARKER BASED ON STATION DROPDOWN SELECTION
+//***
+function buttonClick(index){
+    google.maps.event.trigger(gMarkers[index], 'click');//access marker by indexing markers array
+}
+
+</script> 
+
+<!--Map API that also calls the initMap function-->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB3EaJGUGTaYPhUxTEAB9VUc5awPYZ-N-I&callback=initMap" 
+async defer>  </script>
+<script>    
+
+
+//***
+//CALL FUNCTIONS
+//***
+DailyDropDown();
+HourlyDropDown();
+setDays(chartDay);
+
+</script>
+
+    </body> 
 </html>
   
