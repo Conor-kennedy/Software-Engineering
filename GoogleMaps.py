@@ -22,6 +22,26 @@ def index():
     stat = station().get_json()
     return render_template('Google_Maps.html', stat = stat)
 
+@app.route("/StationTable")
+def index2():
+    stat2 = stations().get_json()
+    return render_template('table.html', stat = stat2)
+
+@app.route("/stations2")
+def stations():
+    #Connect to dBikes database.   'mycursor' used to execute database commands.
+    mydb = mysql.connector.connect(
+    host="dbbikes.cpwzqhmscagf.eu-west-1.rds.amazonaws.com",
+    user="group20",
+    password="30830Group20",
+    database="dBikes")
+
+    mycursor = mydb.cursor()    
+    mycursor.execute("SELECT Address, Available_Bikes, Available_Stands, max(Updated) FROM Bikes Group By Address ORDER BY Address ASC;")
+    myresult = mycursor.fetchall()
+    response = jsonify(myresult)
+    return response
+
 #function that connects to database, queries the 'Station' table and returns the results as JSON
 @app.route("/stations")
 def station():
