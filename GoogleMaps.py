@@ -20,13 +20,16 @@ def test():
 @app.route("/map")
 def index():
     stat = station().get_json()
-    return render_template('Google_Maps.html', stat = stat)
+    bikes = stations().get_json()
+    return render_template('Google_Maps.html', stat = stat, bikes = bikes)
 
+# function that loads a page with a list of stations
 @app.route("/StationTable")
 def index2():
     stat2 = stations().get_json()
     return render_template('table.html', stat = stat2)
 
+# Function that queries most recent data from the dynamic station
 @app.route("/stations2")
 def stations():
     #Connect to dBikes database.   'mycursor' used to execute database commands.
@@ -37,7 +40,8 @@ def stations():
     database="dBikes")
 
     mycursor = mydb.cursor()    
-    mycursor.execute("SELECT Address, Available_Bikes, Available_Stands, max(Updated) FROM Bikes Group By Address ORDER BY Address ASC;")
+    mycursor.execute("SELECT DISTINCT * FROM Bikes INNER JOIN (SELECT DISTINCT(Address), MAX(Updated) AS Maxscore FROM Bikes GROUP BY Address) topscore ON Bikes.Address = topscore.Address AND Bikes.Updated = topscore.maxscore ORDER BY Bikes.Address ASC")
+
     myresult = mycursor.fetchall()
     response = jsonify(myresult)
     return response
@@ -53,7 +57,7 @@ def station():
     database="dBikes")
 
     mycursor = mydb.cursor()    
-    mycursor.execute("SELECT * FROM Station")
+    mycursor.execute("SELECT * FROM Station ORDER BY Address ASC")
     myresult = mycursor.fetchall()
     response = jsonify(myresult)
     return response

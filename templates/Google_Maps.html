@@ -67,9 +67,6 @@
             color: white;
           }
 
-
-
-
             /* Responsive navigation menu (for mobile devices) */
             @media screen and (max-width: 600px) {
               .topnav a, .topnav-right {
@@ -91,8 +88,6 @@
               text-align: center;
               padding: 0;
               margin: 0;
-
-              
             }
 
             .nav li {
@@ -117,10 +112,6 @@
         h1 {
           text-align: center;
         }
-
-        
-
-   
 
         #content {
             position: relative;
@@ -205,6 +196,8 @@
       </div>
 
 <br>
+
+<div id = "test"></div>
 
     <div id="Buttons">
 
@@ -293,6 +286,7 @@ var hourly = ['12am', '1am', '2am', '3am', '4am', '5am', '6am', '7am', '8am', '9
 var ts = Math.round((new Date()).getTime() / 1000); //time at loading
 var gMarkers = []; //array to store google maps markers
 var station = JSON.parse('{{ stat | tojson | safe}}'); //variable contataining static data
+var availableBikes = JSON.parse('{{ bikes | tojson | safe}}'); //variable contataining dynamic data at time of loading
 console.log("station info", station);
 var index; //variable to index array when using button to select marker
 
@@ -315,16 +309,32 @@ function initMap() {
 
     //for each station 
     for (let s = 0; s < station.length; s++) { 
+
+        //each marker labeled as the number of bikes currently available
+        var label = (availableBikes[s][1]).toString();
+        var color; 
+
+        //marker color dependent on how many bikes available
+        if ((availableBikes[s][1] >= 0) && (availableBikes[s][1] < 10)){
+            color = "http://maps.google.com/mapfiles/ms/icons/red-dot.png";
+        } else if ((availableBikes[s][1] >= 10) && (availableBikes[s][1] < 20)) {
+            color = "http://maps.google.com/mapfiles/ms/icons/blue-dot.png";
+        } else {
+            color = "http://maps.google.com/mapfiles/ms/icons/green-dot.png";
+        }
+
         //create a google maps marker using the latitude and longitude for each station
         var marker = new google.maps.Marker({
             position: {lat: parseFloat(station[s][5]), lng: parseFloat(station[s][6])},
             map,
             title: station[s][0],
+            label: {text: label, color: 'black', fontSize: '20px'},
+            icon: { url: color, scaledSize: new google.maps.Size(50, 50)}
         });
   
         //push marker to the array
         gMarkers.push(marker);
-              
+   
 //***
 //FUNCTION FOR WHEN A MARKER IS CLICKED, WHICH WILL QUERY THE 'BIKES' TABLE AND OPEN A POPUP WINDOW
 //***
