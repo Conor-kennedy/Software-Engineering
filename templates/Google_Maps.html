@@ -158,9 +158,6 @@
         width: 30%;
       }
 
-
-
-
     </style>
 </head> 
     
@@ -180,10 +177,6 @@
   </div>
 
 
-
-      
-    
-
 <!-- Navigation Bar-->
       <div class="nav">
         <div class="topnav">
@@ -196,8 +189,6 @@
       </div>
 
 <br>
-
-<div id = "test"></div>
 
     <div id="Buttons">
 
@@ -245,7 +236,7 @@
 
         <div id="button"></div>
 
-        <button onclick="buttonClick(index)">Click me</button>
+        <button onclick="buttonClick(bool)">Click me</button>
 
         <br>
 
@@ -289,23 +280,38 @@ var station = JSON.parse('{{ stat | tojson | safe}}'); //variable contataining s
 var availableBikes = JSON.parse('{{ bikes | tojson | safe}}'); //variable contataining dynamic data at time of loading
 console.log("station info", station);
 var index; //variable to index array when using button to select marker
+var start; //variable for starting station
+var Destination; //variable for destination station
+var directionsService; //Google maps directions variable
+var directionsRenderer; //Google maps directions variable
+var bool; //boolean used turn directions display on/off
 
 //set chartDay to the current day if not already set
 if (!chartDay){
     var chartDay = (new Date(ts*1000)).getDay();
 }
 
-
 //***
 //FUNCTION TO CREATE MAP WITH STATION MARKERS
 //***
 function initMap() { 
 
+    //initialise variables for directions function
+    bool = true; 
+    directionsService = new google.maps.DirectionsService();
+    directionsRenderer = new google.maps.DirectionsRenderer({
+        polylineOptions: {
+              strokeColor: "red"
+        }
+    });
+
     //google map variable displayed in map div
     map = new google.maps.Map(document.getElementById('map'), { 
         center: {lat: 53.3498, lng: -6.2603}, 
         zoom: 13 
-    }); 
+    });
+
+    directionsRenderer.setMap(map); //use current map to show directions
 
     //for each station 
     for (let s = 0; s < station.length; s++) { 
@@ -314,11 +320,11 @@ function initMap() {
         var label = (availableBikes[s][1]).toString();
         var color; 
 
-        //marker color dependent on how many bikes available
+        //marker color dependent on how many bikes available, 0-9 bikes = red, between 10-19 bikes = yellow, over 20 = green
         if ((availableBikes[s][1] >= 0) && (availableBikes[s][1] < 10)){
             color = "http://maps.google.com/mapfiles/ms/icons/red-dot.png";
         } else if ((availableBikes[s][1] >= 10) && (availableBikes[s][1] < 20)) {
-            color = "http://maps.google.com/mapfiles/ms/icons/blue-dot.png";
+            color = "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png";
         } else {
             color = "http://maps.google.com/mapfiles/ms/icons/green-dot.png";
         }
@@ -328,8 +334,8 @@ function initMap() {
             position: {lat: parseFloat(station[s][5]), lng: parseFloat(station[s][6])},
             map,
             title: station[s][0],
-            label: {text: label, color: 'black', fontSize: '20px'},
-            icon: { url: color, scaledSize: new google.maps.Size(50, 50)}
+            label: {text: label, color: 'black', fontSize: '20px'}, //number of bikes labeled
+            icon: { url: color, scaledSize: new google.maps.Size(50, 50)} //colored markers
         });
   
         //push marker to the array
@@ -347,7 +353,7 @@ function initMap() {
             map.panTo(gMarkers[s].getPosition());
 
             //set the selected value of the dropdown to the clicked station
-            setValue(s);
+            setStart(s);
 
             //if a popup is open, close it
             if (infoWindow) {
@@ -478,10 +484,9 @@ function initMap() {
             });
         });
     }
-    
+
     startDropDown();
     destinationDropDown();
-
 }
 
 //***
@@ -489,9 +494,9 @@ function initMap() {
 //***
 function startDropDown() {
 
-    //HTML for dropdown menu, implement 'setValue(marker number)' function on change
+    //HTML for dropdown menu, implement 'setStart(marker number)' function on change
     var station_choice = "<label for='station_option'>Starting Location: </label>"
-    + "<select name='station_option' id='station_option' onchange='setValue(this)'>"
+    + "<select name='station_option' id='station_option' onchange='setStart(this)'>"
     + "<option value='' disabled selected> ----------------------------------------------- </option><br>";
 
     //populate dropdown with station names
@@ -509,19 +514,19 @@ function startDropDown() {
 //***
 function destinationDropDown() {
 
-// //HTML for dropdown menu, implement 'setValue(marker number)' function on change
-var station_choice = "<label for='destination_option'>Destination: </label>"
-+ "<select name='destination_option' id='destination_option' onchange=''>"
-+ "<option value='' disabled selected> ----------------------------------------------- </option><br>";
+    // //HTML for dropdown menu, implement 'setDestination(marker number)' function on change
+    var station_choice = "<label for='destination_option'>Destination: </label>"
+    + "<select name='destination_option' id='destination_option' onchange='setDestination(this)'>"
+    + "<option value='' disabled selected> ----------------------------------------------- </option><br>";
 
-//populate dropdown with station names
-for (let m = 0; m < station.length; m++){
-    station_choice += "<option value=" + m + ">" + gMarkers[m].getTitle() + "</option><br>";
-};
+    //populate dropdown with station names
+    for (let m = 0; m < station.length; m++){
+        station_choice += "<option value=" + m + ">" + gMarkers[m].getTitle() + "</option><br>";
+    };
 
-station_choice += "</select>";
+    station_choice += "</select>";
 
-document.getElementById("choose_destination").innerHTML = station_choice;
+    document.getElementById("choose_destination").innerHTML = station_choice;
 }
 
 //***
@@ -549,11 +554,12 @@ function DailyDropDown() {
 //***
 function HourlyDropDown() {
         
+    //HTML for dropdown menu, implement 'setHours(hour number)' function on change
     var hour_choice = "<label for='hour_option'>Choose an hour: </label>"
     + "<select name='hour_option' id='hour_option' onchange='setHours(this)'>"
     + "<option value='' disabled selected> ----------------------------------------------- </option><br>";
      
-    //populate dropdown with weekdays  
+    //populate dropdown with hours  
     for (let t = 0; t < hourly.length; t++){
         hour_choice += "<option value=" + t + ">" + hourly[t] + "</option><br>";
     };
@@ -564,10 +570,10 @@ function HourlyDropDown() {
 }
 
 //***
-//FUNCTION TO SELECT THE VALUE OF THE STATION DROPDOWN, THAT TAKES INPUT FROM THE CLICKED MARKER OR
+//FUNCTION TO SELECT THE VALUE OF THE STARTING STATION DROPDOWN, THAT TAKES INPUT FROM THE CLICKED MARKER OR
 //FROM THE STATION DROPDOWN SELECTION
 //***
-function setValue(ele1){
+function setStart(ele1){
 
     var n;
 
@@ -578,14 +584,36 @@ function setValue(ele1){
         n = ele1;
     }
 
-    //assign input as selected value for daily dropdown menu
+    //assign input as selected value for starting station dropdown menu
     document.getElementById('station_option').value = n;
 
-    //set index for marker to be selected using buttonClick()
+    //set index for start station marker to be selected using buttonClick()
     index = n;
-
+    start = gMarkers[index];
+    //google.maps.event.trigger(gMarkers[index], 'click'); //access marker by indexing markers array
 }
 
+//***
+//FUNCTION TO SELECT THE VALUE OF THE DESTINATION STATION DROPDOWN, THAT TAKES INPUT FROM 
+//THE STATION DROPDOWN SELECTION
+//***
+function setDestination(ele1){
+
+var n;
+
+//check input type is a number type
+if (typeof(ele1) != "number"){
+    n = ele1.value;
+}else {
+    n = ele1;
+}
+
+//assign input as selected value for destination dropdown menu
+document.getElementById('destination_option').value = n;
+
+//set index for destination station marker to be selected using buttonClick()
+destination = gMarkers[n];
+}
 
 //***
 //FUNCTION TO SELECT THE VALUE OF THE DAILY DROPDOWN, THAT TAKES INPUT AS THE CURRENT DAY
@@ -610,16 +638,51 @@ function setDays(ele2){
 }
 
 //***
-//FUNCTION TO CLICK A STATION MARKER BASED ON STATION DROPDOWN SELECTION
+//FUNCTION TO SHOW DIRECTIONS BETWEEN TWO STATIONS BASED ON STATION DROPDOWN SELECTION, THAT TAKES A BOOLEAN
+//AS AN ARGUMENT
 //***
-function buttonClick(index){
-    google.maps.event.trigger(gMarkers[index], 'click');//access marker by indexing markers array
+function buttonClick(toggle){
+
+    //check if toggle is true, send a Google Maps Directions API request based on the geolocation of two markers 
+    //selected using the dropdown menus
+    if (toggle) {
+        var request = {
+            origin: new google.maps.LatLng(start.getPosition().lat(), start.getPosition().lng()),
+            destination: new google.maps.LatLng(destination.getPosition().lat(), destination.getPosition().lng()),
+            travelMode: 'BICYCLING'
+        };
+
+        //send request and if successful, show the results on the map, iterate through each marker 
+        //and turn off their display
+        directionsService.route(request, function(result, status) {
+            if (status == 'OK') {
+                directionsRenderer.setMap(map);
+                directionsRenderer.setDirections(result);
+                for (var i = 0; i < gMarkers.length; i++){
+                    gMarkers[i].setMap(null);
+                }
+                //change value of the toggle to false
+                bool = !bool;
+            } else {
+                  console.log('directions error')
+            }
+        });
+    //If toggle is false, turn the directions display off and iterate through each marker and display on the map
+    } else {
+            directionsRenderer.setMap(null);
+            for (var i = 0; i < gMarkers.length; i++){
+                gMarkers[i].setMap(map);
+            }
+            //turn the toggle to true
+            bool = !bool;
+    }
+
 }
 
 </script> 
 
 <!--Map API that also calls the initMap function-->
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB3EaJGUGTaYPhUxTEAB9VUc5awPYZ-N-I&callback=initMap" 
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCzItvv4SONxxcQLsy7nEIt_djn54y8jjk&callback=initMap" 
 async defer>  </script>
 <script>    
 
@@ -634,24 +697,23 @@ setDays(chartDay);
 getWeatherInfo();
 
       function getWeatherInfo(){
-      //call weather API from openweathermap
-        var weatherdata;
-        $.getJSON('http://api.openweathermap.org/data/2.5/weather?lat=53.344&lon=-6.2672&appid=5f67f6a5a5d8e18998975ca3111e4dc7&units=metric',function(data){
-        var weather_description = data.weather[0].description;
-        var temperature = data.main.temp;
-        var wind_speed=data.wind.speed;
-        var icon = data.weather[0].icon;
-        var iconUrl = ("<img src='http://openweathermap.org/img/w/" + icon + ".png'>");
-        
-        
-        $("#currentWeather").html(weather_description);
-        $("#currentTemp").html("Temperature: " + temperature + " °C");
-        $("#windspeed").html("Wind Speed: " + wind_speed + " m/s");
-        $("#icon").html(iconUrl);
-        
-        })
+            //call weather API from openweathermap
+            var weatherdata;
+            $.getJSON('http://api.openweathermap.org/data/2.5/weather?lat=53.344&lon=-6.2672&appid=5f67f6a5a5d8e18998975ca3111e4dc7&units=metric',function(data){
+                var weather_description = data.weather[0].description;
+                var temperature = data.main.temp;
+                var wind_speed=data.wind.speed;
+                var icon = data.weather[0].icon;
+                var iconUrl = ("<img src='http://openweathermap.org/img/w/" + icon + ".png'>");
+                
+                
+                $("#currentWeather").html(weather_description);
+                $("#currentTemp").html("Temperature: " + temperature + " °C");
+                $("#windspeed").html("Wind Speed: " + wind_speed + " m/s");
+                $("#icon").html(iconUrl);
+            
+            })
 }
-
 
 
 </script>
