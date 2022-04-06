@@ -12,6 +12,7 @@ def hello(stationName):
     stat = bikes(stationName).get_json()
     return render_template('test.html', stat = stat)
 
+#function to test code
 @app.route("/test")
 def test():
     return render_template('test2.html')
