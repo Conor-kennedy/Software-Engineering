@@ -7,7 +7,11 @@
    
     <script src="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
     <link href="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.css" rel="stylesheet" type="text/css" />
-    
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
     <title>Simple Map</title>
     <!--- <link rel="stylesheet" href="style2.css"> --->
 
@@ -254,6 +258,19 @@
 
     <h2>Plan your Trip</h2>
     <br>
+
+    <br>
+
+    <div id="choose_start2"></div>
+
+    <p>Choose a date & time: </p><input type="text" name="prediction" value="04/04/2022" />
+
+    <br>
+
+        <div></div>
+
+    <br>
+
   <hr>
 
 <footer>
@@ -263,6 +280,57 @@
 </footer>
        
 <script> 
+
+//calendar function
+
+    // getting today's date
+
+    var today = new Date();
+
+    // getting date 15 days in future - may change depending on weather forecast 
+
+    var end_date = new Date();
+    end_date.setDate(today.getDate()+15);
+
+
+      $(function() {
+        $('input[name="prediction"]').daterangepicker({
+          singleDatePicker: true,
+          showDropdowns: true,
+          timePicker: true,
+          startDate: today,
+          minDate: today,
+          maxDate: end_date,
+          locale: {
+          format: 'DD/MM/YYYY' 
+        }
+
+        }, function(start, label) {
+
+          //testing the output
+
+          console.log("Date selected", start._d);
+
+          //for prediction:
+          console.log("Date selected hours", start._d.getHours());
+          console.log("Date selected Day", start._d.getDay());
+          console.log("Date selected", start._i[0]);
+          console.log("Date selected", start);
+
+          
+
+          // the variables to pass through for predictions are here - day and hour 
+
+          // expected forecast for this day is 
+
+          //unix time stamp for the weather 
+          console.log("Unix Time Stamp:", (start._d.getTime())/1000)
+          
+        });
+      });
+
+      
+
 
             
 //***
@@ -486,7 +554,24 @@ function initMap() {
     }
 
     startDropDown();
+    startDropDown2();
     destinationDropDown();
+}
+
+function startDropDown2() {
+  //HTML for dropdown menu, implement 'setValue(marker number)' function on change
+  var station_choice = "<label for='station_option'>Starting Location: </label>"
+    + "<select name='station_option' id='station_option' onchange='setValue(this)'>"
+    + "<option value='' disabled selected> ----------------------------------------------- </option><br>";
+
+    //populate dropdown with station names
+    for (let m = 0; m < station.length; m++){
+        station_choice += "<option value=" + m + ">" + gMarkers[m].getTitle() + "</option><br>";
+    };
+
+    station_choice += "</select>";
+
+    document.getElementById("choose_start2").innerHTML = station_choice;
 }
 
 //***
@@ -712,6 +797,12 @@ getWeatherInfo();
                 $("#icon").html(iconUrl);
             
             })
+
+
+
+
+         
+
 }
 
 
