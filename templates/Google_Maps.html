@@ -11,6 +11,7 @@
 <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <title>Simple Map</title>
     <!--- <link rel="stylesheet" href="style2.css"> --->
@@ -261,6 +262,14 @@
 <footer>
 
   <p>COMP30830 - Software Engineering Project</p>
+
+
+  
+  <p><i style="font-size:24px" class="fa">&#xf206;</i>  Created by Daniel Howes, Mark Kavanagh & Conor Kennedy   <i style="font-size:24px" class="fa">&#xf206;</i></p>
+
+  <br>
+
+  
     
 </footer>
        
@@ -268,16 +277,11 @@
 
 //calendar function
 
-    var station1;
+    //var station1;
 
     // getting today's date
 
     var today = new Date();
-
-    // getting date 15 days in future - may change depending on weather forecast 
-
-    var end_date = new Date();
-    end_date.setDate(today.getDate()+15);
 
 
       $(function() {
@@ -287,7 +291,6 @@
           timePicker: true,
           startDate: today,
           minDate: today,
-          maxDate: end_date,
           locale: {
           format: 'DD/MM/YYYY' 
         }
@@ -308,18 +311,17 @@
           var days_test = (start._d.getDay());
 
           console.log("days, test", days_test);
-
           console.log("testtest", hours_test);
-
           console.log("hours test:", hours_test);
           console.log("Date selected Day", start._d.getDay());
           console.log("Date selected", start._i[0]);
           console.log("Date selected", start);
 
+        //if user selects a time where the stations are not opened a message appears
 
           if (hours_test > 0 && hours_test < 6) {
 
-            document.getElementById("prediction_section_three").innerHTML = "This is a reminder that the station will be closed at this time. All stations are closed between 00:00 and 06:00";
+            document.getElementById("prediction_section_three").innerHTML = "This is a reminder that the station will be closed at this time. All stations are closed between 00:00 and 06:00.";
 
           }
 
@@ -328,8 +330,6 @@
 
 
           predict()
-
-          //CONOR ADDED 3 DONE
 
           //for prediction:
           console.log("Date selected hours", start._d.getHours());
@@ -347,8 +347,6 @@
           console.log("Unix Time Stamp:", (start._d.getTime())/1000)
 
           function predict() {
-
-            document.getElementById("prediction_section").innerHTML = "This is a test!";
 
             console.log("testtestwithinfunction", hours_test);
 
@@ -371,16 +369,7 @@
             }
           
         });
-      });
-
-      //this is working, appears when user clicks apply on calendar
-
-      //CONOR ADDED 4 DONE
-
-      
-
-
-            
+      }); 
 //***
 //GLOBAL VARIABLES
 //***
@@ -403,11 +392,7 @@ var directionsRenderer; //Google maps directions variable
 var bool; //boolean used turn directions display on/off
 var currentLatitude; //users latitude
 var currentLongitude; //users longitude
-
-//CONOR ADDED 5
-var station1;
-
-//CONOR ADDED 5 DONE
+var station1; //used for station name on dropdown for predictions
 
 //set chartDay to the current day if not already set
 if (!chartDay){
@@ -614,12 +599,11 @@ function initMap() {
     }
 
     startDropDown();
-    //startDropDown2();
     destinationDropDown();
 }
 
 console.log("stationcheck", station);
-
+//dropdown for predictions
 startDropDown2();
 
 function startDropDown2() {
@@ -639,13 +623,8 @@ function startDropDown2() {
 
     document.getElementById("choose_start2").innerHTML = station_choice;
 
-
-
-   // var select = document.getElementById('choose_start2');
-   // var value = select.options[select.selectedIndex].value;
-    //console.log(value); 
 }
-
+//getting selected value from dropdown stored in variable station1
 function SelectedValue(m) {
 
     console.log(gMarkers[0].getTitle())
@@ -653,11 +632,8 @@ function SelectedValue(m) {
     station1 = gMarkers[m.value].getTitle();
 
 
-   console.log("new test nmae", station1);
+   console.log("new test name", station1);
 }
-
-//}
-//CONOR ADDED 6 DONE
 
 //***
 //FUNCTION TO CREATE DROPDOWN TO SELECT START STATION
@@ -929,6 +905,7 @@ DailyDropDown();
 HourlyDropDown();
 setDays(chartDay);
 
+//function for the weather information for the top right of the page
 getWeatherInfo();
 
 function getWeatherInfo(){
