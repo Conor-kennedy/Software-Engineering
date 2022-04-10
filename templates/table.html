@@ -168,6 +168,10 @@
                     height: 30px;
                 }
 
+                .button {
+                    text-align: center;
+                }
+
                 footer {
                 text-align: center;
                 }
@@ -203,11 +207,17 @@
 
 <br>
 
+<div class="button">
+<button onClick="window.location.reload();">Refresh Page</button>
+</div>
+
+<br>
+
 
 <div class="row">
     <div class="col">
         <div class="card card-body">
-            <input id="search-input" class="form-control" type="text" placeholder="Enter Station Addresss">
+            <input id="search-input" class="form-control" type="text" placeholder="Enter Station Address">
         </div>
     </div>
 </div>
@@ -249,6 +259,8 @@
 
         <script>
 
+           
+
 
 
             var station = JSON.parse('{{ stat | tojson | safe}}');
@@ -259,25 +271,26 @@
 
 
             $('#search-input').on('keyup', function() {
-            var value = $(this).val()
-            console.log(value)
+            var value = $(this).val() //getting the value that is being entered by the user
+            console.log(value) 
             var data = searchTable(value, station)
-            buildTable(data)
+            buildTable(data) 
 
             })
 
             buildTable(station)
 
-            function searchTable(value, data) {
-                var filteredData = []
+            //search function taking in value and array of data
+            function searchTable(value, data) { 
+                var filteredData = [] //returns new array
 
                 for (var i = 0; i < data.length; i++) {
-                    value = value.toLowerCase()
-                    var name = data[i][0].toLowerCase()
+                    value = value.toLowerCase() //change user input to lower case so that it is not case sensitive
+                    var name = data[i][0].toLowerCase() //changing address to lower case too
 
-                    if (name.includes(value)){
+                    if (name.includes(value)){ //if address includes the value
 
-                        filteredData.push(data[i])
+                        filteredData.push(data[i]) //add address to the new filtered array
 
                     }
 
@@ -349,6 +362,8 @@
                 })
                 }
 
+
+               
 
         </script>
 
