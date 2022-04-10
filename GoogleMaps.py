@@ -4,6 +4,10 @@ from jinja2 import Template
 import mysql.connector
 import requests
 import json
+import pickle
+from pickle import load
+import joblib
+
 
 app = Flask(__name__, static_url_path='')
 
@@ -98,6 +102,55 @@ def bikes(stationName):
     myresult = mycursor.fetchall()
     response = jsonify(myresult)
     return response
+
+
+@app.route("/predict/<string:station1>/<int:days_test>/<int:hours_test>")
+def predict(station1, days_test, hours_test):
+    args = request.args
+    #haven't included station name yet
+    #print(args)
+    #print(days_test)
+    #print(type(args))
+    print("Station_Name", station1)
+    print("Days", days_test)
+    print("hours:", hours_test)
+    #print(args.get(days_test))
+    #print(args.get('days_test'))
+    #print("test", type(args))
+    #print("hello")
+
+    weekday = days_test
+    hour_time = hours_test
+
+    #handle = "'Charleville Road_model.pkl'"
+
+    #joblib.load(filename, mmap_mode=None)
+
+    #This works
+
+    file_name = 'SoftEngPickle/' + station1 + "_model.pkl"
+
+    new_file_name = file_name
+
+    print("new_file_name", new_file_name)
+
+    with open(new_file_name, 'rb') as f:
+
+
+        model = joblib.load(f)
+        
+        bike_avail_predict = model.predict([[hour_time, weekday]])
+
+        predict_list = bike_avail_predict.tolist()
+        predict_dict = {"bikes": round(predict_list[0], 0)}
+        result = json.dumps(predict_dict)
+        print(type(result))
+        print(result)
+        return result
+
+#CONOR DDED 2 DONE
+
+
 
 
 if __name__ == "__main__":

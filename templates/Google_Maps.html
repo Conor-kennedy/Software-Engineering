@@ -245,6 +245,15 @@
     <p>Choose a date & time: </p><input type="text" name="prediction" value="04/04/2022" />
 
     <br>
+
+    <br>
+
+        <div id="prediction_section"></div>
+
+        <div id="prediction_section_two"></div>
+
+        <div id="prediction_section_three"></div>
+
 </div>
 
 <hr>
@@ -258,6 +267,8 @@
 <script> 
 
 //calendar function
+
+    var station1;
 
     // getting today's date
 
@@ -287,6 +298,39 @@
 
           console.log("Date selected", start._d);
 
+          //CONOR ADDED 3
+
+          //for prediction:
+          console.log("Date selected hours", start._d.getHours());
+
+          var hours_test = (start._d.getHours());
+
+          var days_test = (start._d.getDay());
+
+          console.log("days, test", days_test);
+
+          console.log("testtest", hours_test);
+
+          console.log("hours test:", hours_test);
+          console.log("Date selected Day", start._d.getDay());
+          console.log("Date selected", start._i[0]);
+          console.log("Date selected", start);
+
+
+          if (hours_test > 0 && hours_test < 6) {
+
+            document.getElementById("prediction_section_three").innerHTML = "This is a reminder that the station will be closed at this time. All stations are closed between 00:00 and 06:00";
+
+          }
+
+          else { document.getElementById("prediction_section_three").innerHTML = ""};
+
+
+
+          predict()
+
+          //CONOR ADDED 3 DONE
+
           //for prediction:
           console.log("Date selected hours", start._d.getHours());
           console.log("Date selected Day", start._d.getDay());
@@ -301,9 +345,37 @@
 
           //unix time stamp for the weather 
           console.log("Unix Time Stamp:", (start._d.getTime())/1000)
+
+          function predict() {
+
+            document.getElementById("prediction_section").innerHTML = "This is a test!";
+
+            console.log("testtestwithinfunction", hours_test);
+
+            console.log("testest", days_test);
+
+            console.log("IN FUNCTION", station1);
+
+            fetch("/predict/" + station1 + "/" + days_test + "/" + hours_test).then(response => {
+              return response.json();
+            }).then(predictData => {
+
+                console.log(predictData);
+
+                document.getElementById("prediction_section_two").innerHTML = "Expected Number of Bikes Available at " + station1 + " for this time and date: " + predictData.bikes;
+
+
+
+            })
+
+            }
           
         });
       });
+
+      //this is working, appears when user clicks apply on calendar
+
+      //CONOR ADDED 4 DONE
 
       
 
@@ -331,6 +403,11 @@ var directionsRenderer; //Google maps directions variable
 var bool; //boolean used turn directions display on/off
 var currentLatitude; //users latitude
 var currentLongitude; //users longitude
+
+//CONOR ADDED 5
+var station1;
+
+//CONOR ADDED 5 DONE
 
 //set chartDay to the current day if not already set
 if (!chartDay){
@@ -537,25 +614,50 @@ function initMap() {
     }
 
     startDropDown();
-    startDropDown2();
+    //startDropDown2();
     destinationDropDown();
 }
 
+console.log("stationcheck", station);
+
+startDropDown2();
+
 function startDropDown2() {
-  //HTML for dropdown menu, implement 'setValue(marker number)' function on change
-  var station_choice = "<label for='station_option'>Starting Location: </label>"
-    + "<select name='station_option' id='station_option' onchange='setValue(this)'>"
+  //HTML for dropdown menu
+  var station_choice = "<label for='station_option1'>Select Station: </label>"
+    + "<select name='station_option1' id='station_option1' onchange='SelectedValue(this)'>"
     + "<option value='' disabled selected> ----------------------------------------------- </option><br>";
 
     //populate dropdown with station names
     for (let m = 0; m < station.length; m++){
-        station_choice += "<option value=" + m + ">" + gMarkers[m].getTitle() + "</option><br>";
+        station_choice += "<option value=" + m + ">" + station[m][0] + "</option><br>";
+
+        
     };
 
     station_choice += "</select>";
 
     document.getElementById("choose_start2").innerHTML = station_choice;
+
+
+
+   // var select = document.getElementById('choose_start2');
+   // var value = select.options[select.selectedIndex].value;
+    //console.log(value); 
 }
+
+function SelectedValue(m) {
+
+    console.log(gMarkers[0].getTitle())
+
+    station1 = gMarkers[m.value].getTitle();
+
+
+   console.log("new test nmae", station1);
+}
+
+//}
+//CONOR ADDED 6 DONE
 
 //***
 //FUNCTION TO CREATE DROPDOWN TO SELECT START STATION
