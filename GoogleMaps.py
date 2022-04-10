@@ -1,20 +1,33 @@
 from distutils.log import debug
-from flask import Flask, render_template, jsonify, make_response
+from flask import Flask, render_template, jsonify, make_response, request
 from jinja2 import Template
 import mysql.connector
 import requests
+import json
 
 app = Flask(__name__, static_url_path='')
 
 #function to test url works
-@app.route("/hello/<stationName>")
-def hello(stationName):
-    stat = bikes(stationName).get_json()
-    return render_template('test.html', stat = stat)
+@app.route("/hello")
+def hello():
+    return render_template('test.html')
 
 #function to test code
-@app.route("/test")
-def test():
+# @app.route("/test", methods=['POST'])
+# def test():
+#     # string
+#     output = request.get_json()
+#     print(type(output))
+#     # dict
+#     result = json.loads(output)
+#     print(result)
+#     print(type(result))
+#     return result
+
+#function to test code
+@app.route("/")
+def asd():
+    print('hello')
     return render_template('test2.html')
 
 #function for the home page that shows the map
