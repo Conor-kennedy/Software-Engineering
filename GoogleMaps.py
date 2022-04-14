@@ -16,17 +16,9 @@ app = Flask(__name__, static_url_path='')
 def hello():
     return render_template('test.html')
 
-#function to test code
-# @app.route("/test", methods=['POST'])
-# def test():
-#     # string
-#     output = request.get_json()
-#     print(type(output))
-#     # dict
-#     result = json.loads(output)
-#     print(result)
-#     print(type(result))
-#     return result
+@app.route("/about")
+def About():
+    return render_template('about.html')
 
 #function to test code
 @app.route("/")
@@ -42,7 +34,7 @@ def index():
     return render_template('Google_Maps.html', stat = stat, bikes = bikes)
 
 # function that loads a page with a list of stations
-@app.route("/StationTable")
+@app.route("/stationTable")
 def index2():
     stat2 = stations().get_json()
     return render_template('table.html', stat = stat2)
@@ -103,39 +95,20 @@ def bikes(stationName):
     response = jsonify(myresult)
     return response
 
-
+#function that returns station prediction
 @app.route("/predict/<string:station1>/<int:days_test>/<int:hours_test>")
 def predict(station1, days_test, hours_test):
     args = request.args
-    #haven't included station name yet
-    #print(args)
-    #print(days_test)
-    #print(type(args))
-    print("Station_Name", station1)
-    print("Days", days_test)
-    print("hours:", hours_test)
-    #print(args.get(days_test))
-    #print(args.get('days_test'))
-    #print("test", type(args))
-    #print("hello")
-
     weekday = days_test
     hour_time = hours_test
 
-    #handle = "'Charleville Road_model.pkl'"
-
-    #joblib.load(filename, mmap_mode=None)
-
-    #This works
-
-    file_name = 'SoftEngPickle/' + station1 + "_model.pkl"
+    file_name = 'Software-Engineering/SoftEngPickle/' + station1 + "_model.pkl"
 
     new_file_name = file_name
 
     print("new_file_name", new_file_name)
 
     with open(new_file_name, 'rb') as f:
-
 
         model = joblib.load(f)
         
@@ -147,11 +120,6 @@ def predict(station1, days_test, hours_test):
         print(type(result))
         print(result)
         return result
-
-#CONOR DDED 2 DONE
-
-
-
 
 if __name__ == "__main__":
     app.run(debug=True)

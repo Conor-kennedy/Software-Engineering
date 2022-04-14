@@ -10,277 +10,335 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <title>Simple Map</title>
     <!--- <link rel="stylesheet" href="style2.css"> --->
+    <!-- <link rel="stylesheet" href="style.css">  -->
 
     <style>
         /* Always set the map height explicitly to define the size of the div 
         * element that contains the map. */ 
-    #map { 
-            height: 90%; 
-            width: 70%;
-            float: right;
-
-            /* margin-left: auto;
-            margin-right: auto; */
-    } 
-
-
-    #journeyplanner {
-            text-align: center;
-            align-items: center;
-            float: left;
-            width: 30%;
-            /* overflow: hidden;
-            transition: height 200ms; */
-    }
-
-
-    #model, #charts {
-            text-align: center;
-            align-items: center;
-            clear: both;
-    }
-
-
-    /* Optional: Makes the sample page fill the window. */ 
-    html, body { 
-            height: 100%; 
-            margin: 0; 
-            padding: 0; 
-            font-family: Courier New;
-    } 
-
-    h3, .daily-bar, .hourly-bar  {
-            text-align: center;
-    }
-
-    #dropdown {
-            text-align: center;
-    }
-
-
-    .nav {
-            position: relative;
-            overflow: hidden;
-            background-color: #333;
-    }
-
-    .nav a {
-            float: left;
-            color: #f2f2f2;
-            text-align: center;
-            padding: 14px 16px;
-            text-decoration: none;
-            font-size: 17px;
-    }
-
-    .nav a:hover {
-            background-color: #ddd;
-            color: black;
-    }
-
-    .nav a.active {
-            background-color: #04AA6D;
-            color: white;
-    }
-
-    /* Responsive navigation menu (for mobile devices) */
-    @media screen and (max-width: 600px) {
-    .nav a, .nav-right {
-            float: none;
-            display: block;
-    }
-        
-    .nav-centered a {
-            position: relative;
-            
-            transform: none;
-        }
-    }
-
-    .nav ul {
-            list-style: none;
-            background: blue;
-            text-align: center;
-            padding: 0;
+           /* Optional: Makes the sample page fill the window. */ 
+           html, body {  
             margin: 0;
-    }
+            padding: 0;
+            border: 0;
+            outline: 0;
+            font-size: 100%;
+            vertical-align: baseline;
+            background: transparent;
+            width:100%;
+            margin:auto;
+            height: 100%; 
+            font-family: Courier New; 
+         }  
+         
+         .header{
+                  
+                  display: flex;
+                  flex-direction: column;
+                  background-color:#FFC107;
+                  height: 20vh;
+                  clear: both;
+         }
+      
+         #main{
+      
+                  display: flex;
+                  width: 100%;
+                  height: 80vh;
+      
+         }
 
-    .nav li {
-            display: inline-block;
+         #map { 
+                  display: flex;
+                  flex-direction: column;
+                  width: 70%;
+                  float: right;
 
-    }
+          } 
+      
+      
+         #journeyplanner {
 
-    .nav a:hover {
-            background-color: #ddd;
-            color: black;
-    }
+                  text-align: center;
+                  align-items: center;
+                  float: left;
+                  width: 30%;
+                  overflow: auto;
+                  margin: 0;
+            
 
+          }
+      
+          #dropdown {
+                  display: flex;
+                  flex-direction: column;
+                  align-items: left;
+                  justify-content: left;
+          }
 
-    h2 {    
-            background-color: blue;
-            color: white;
-            text-align: center;
-            font-size: 50px;
-            padding: 10px;
-    }
+          label {
 
-    h1 {
-            text-align: center;
-    }
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  margin: 0 auto;
+          }
+          button {
+              display: inline-block;
+              padding: 8px;
 
-    #content {
-            position: relative;
-    }
+          }
 
-    #content image {
-            position: absolute;
-            top: 0px;
-            right: 0px;
-    }
+          #button {
+              display: flex;
+              flex-direction: row;
+              align-items: center;
+              justify-content: center;
 
-    
+          }
+      
+         #charts {
 
-    .topright2 {
-            position: absolute;
-            top: 8px;
-            right: 16px;
-            font-size: 18px;
-    }
+                  text-align: center;
+                  align-items: center;
+                  clear: both;
+                  overflow: auto;
+                  
+        }
 
-    .topright3 {
-            position: absolute;
-            top: 27px;
-            right: 16px;
-            font-size: 18px;
-    }
+      
+        #model {
 
-    .topright4 {
-            position: absolute;
-            top: 40px;
-            right: 90px;
-            font-size: 18px;
-    }
+                  display: flex;
+                  flex-direction: column;
+                  text-align: center;
+                  align-items: center;
+                  clear: both;
+                  overflow: auto;
+                  background-color:#FFC107;
+      
+        }
+      
+          .ct-label.ct-label.ct-horizontal.ct-end {
+                  position: relative;
+                  justify-content: flex-end;
+                  text-align: right;
+                  transform-origin: 100% 0;
+                  transform: translate(-100%) rotate(-45deg);
+                  white-space:nowrap;
+          }
+      
+      
 
-    footer {
-            text-align: center;
-    }
+      
+          .nav a {
+                  float: left;
+                  color: #f2f2f2;
+                  text-align: center;
+                  padding: 14px 16px;
+                  text-decoration: none;
+                  font-size: 17px;
+          }
+      
+          .nav a:hover {
+                  background-color: #ddd;
+                  color: black;
+          }
+      
+          .nav a.active {
+                  background-color: #04AA6D;
+                  color: white;
+          }
 
+          .nav {
+                      overflow: hidden;
+                  background-color:#1E88E5;
 
-    .daily-bar, .hourly-bar {
-            width: 30%;
-    }
-
-
+                  }
+      
+          /* Responsive navigation menu (for mobile devices) */
+          @media screen and (max-width: 600px) {
+                  .nav a, .nav-right {
+                          float: none;
+                          display: block;
+                  }
+                      
+                  .nav-centered a {
+                          position: relative;
+                          transform: none;
+                      }
+          }
+      
+          .nav ul {
+              
+                  list-style: none;
+                  text-align: center;
+                  padding: 0;
+                  margin: 0;
+          }
+      
+          .nav li {
+                  display: inline-block;
+      
+          }
+      
+          .nav a:hover {
+                  background-color: #ddd;
+                  color: black;
+          }
+      
+      
+          h2 {    
+                  color: black;
+                  text-align: center;
+                  font-size: 20px;
+                  padding: 10px;
+          }
+      
+          h1 {
+                  text-align: center;
+                  font-size: 50px;
+                  padding: 10px;
+          }
+      
+          #content {
+                  position: relative;
+          }
+      
+          #content image {
+                  position: absolute;
+                  top: 0px;
+                  right: 0px;
+          }
+      
+          
+      
+          .topright2 {
+                  position: absolute;
+                  top: 8px;
+                  right: 16px;
+                  font-size: 18px;
+          }
+      
+          .topright3 {
+                  position: absolute;
+                  top: 27px;
+                  right: 16px;
+                  font-size: 18px;
+          }
+      
+          .topright4 {
+                  position: absolute;
+                  top: 40px;
+                  right: 90px;
+                  font-size: 18px;
+          }
+      
+          footer {
+                  text-align: center;
+          }
     </style>
 </head> 
-    
-<body> 
 
-<!-- Heading -->
-    <div class="header">
+        <body> 
+        
+        <!-- Heading -->
+        
+        
+<section class="header">
+
         <h1>Dublin Bike Tracker</h1>
-    </div>
 
-    <div container = "topright">
-            <div class="topright2"  id="currentTemp"></div>
-            <div class="topright3"  id="windspeed"></div>
-            <div class="topright4"  id="icon"></div>
-
-    </div>
-
+        <div container = "topright">
+                <div class="topright2"  id="currentTemp"></div>
+                <div class="topright3"  id="windspeed"></div>
+                <div class="topright4"  id="icon"></div>
+        </div>
 
 <!-- Navigation Bar-->
-    <div class="nav">
+        <div class="nav">
         <ul>
-            <li><a href="#">Home</a></li>
-            <li><a href="#">Updated Information</a></li>
-            <li><a href="#">About</a></li>
+                <li><a href="http://127.0.0.1:5000/map">Home</a></li>
+                <li><a href="http://127.0.0.1:5000/stationTable">Station Information</a></li>
+                <li><a href="http://127.0.0.1:5000/about">About</a></li>
         </ul>
-    </div>
-
-
+        </div>
+</section>
+        
 <!---Div for the map-->
-<div id="map"></div> 
-
-<div id = "journeyplanner">
-        <div id ="route header"><h2>Route Information</h2></div>
-    
-        <!---Div for the user selection-->
-        <div id="dropdown">   
-                <br>
-                <div id="choose_start"></div>
-                <br>
-                <div id="choose_destination"></div>
-                <br>
-                <div id="choose_day"></div>
-                <br>
-                <div id="choose_hour"></div>
-                <br>
-                <div id="button"></div>
-                <br>
-                <button onclick="buttonClick(bool)">Show Route</button>
-                <br>
+<section id = "main">
+        <div id = "journeyplanner">
+                <div id ="route_header"><h2>Route Information</h2></div>
+                
+                <!---Div for the user selection-->
+                <div id="dropdown">   
+                        <br>
+                        <div id="choose_start"></div>
+                        <br>
+                        <div id="choose_destination"></div>
+                        <br>
+                        <div id="choose_day"></div>
+                        <br>
+                </div>
+                <div id="button">
+                        <br>
+                        <button onclick="buttonClick(bool)">Show Route</button>
+                        <br>
+                        <button onclick="closestStation()">Show Closest Station</button>
+                        <br>
+                </div>
 
                 <!---Div for the charts-->
                 <div id = "charts">
                         <br>
-                        <div id = "chartHeader1"></div>
-                        <div class="daily-bar"></div>
-                        <div id = "chartHeader2"></div>
-                        <div class="hourly-bar"></div>
+                        <div id = "chartHeader1" style="padding: 12px;"></div>
+                        <br>
+                        <div class="ct-chart ct-golden-section" id="chart1"></div>
+                        <br>
+                        <div id = "chartHeader2" style="padding:12px;"></div>
+                        <br>
+                        <div class="ct-chart ct-golden-section" id="chart2"></div>
                 </div>
+        </div>
 
-            </div>
-</div>
+        <div id = "map"></div> 
+</section>
+        
+<section id = "model">
+        <h2>Plan your Trip</h2>
+        <div id="choose_start2"></div>
 
-<div id = "model">
-    <h2>Plan your Trip</h2>
- 
-    <div id="choose_start2"></div>
-
-    <p>Choose a date & time: </p><input type="text" name="prediction" value="04/04/2022" />
-
-    <br>
-
-    <br>
-
+        <p>Choose a date & time: </p><input type="text" name="prediction" value="04/04/2022" />
+        <br>
+        <br>
+    
         <div id="prediction_section"></div>
 
         <div id="prediction_section_two"></div>
 
         <div id="prediction_section_three"></div>
 
-</div>
+</section>
 
-<hr>
+<br>
 
 <footer>
-
-  <p>COMP30830 - Software Engineering Project</p>
-
-
-  
-  <p><i style="font-size:24px" class="fa">&#xf206;</i>  Created by Daniel Howes, Mark Kavanagh & Conor Kennedy   <i style="font-size:24px" class="fa">&#xf206;</i></p>
-
-  <br>
-
-  
-    
+        <p>COMP30830 - Software Engineering Project</p>
+        <p><i style="font-size:24px;" class="fa">&#xf206;</i>  Created by Daniel Howes, Mark Kavanagh & Conor Kennedy   <i style="font-size:24px" class="fa">&#xf206;</i></p>
+        <br>
 </footer>
+          
        
 <script> 
 
 //calendar function
 
-    //var station1;
-
     // getting today's date
-
     var today = new Date();
 
 
@@ -310,6 +368,7 @@
 
           var days_test = (start._d.getDay());
 
+        //   variable tests
           console.log("days, test", days_test);
           console.log("testtest", hours_test);
           console.log("hours test:", hours_test);
@@ -319,9 +378,9 @@
 
         //if user selects a time where the stations are not opened a message appears
 
-          if (hours_test > 0 && hours_test < 6) {
+          if (hours_test > 0 && hours_test < 5) {
 
-            document.getElementById("prediction_section_three").innerHTML = "This is a reminder that the station will be closed at this time. All stations are closed between 00:00 and 06:00.";
+            document.getElementById("prediction_section_three").innerHTML = "This is a reminder that the station will be closed at this time. All stations are closed between 00:00 and 05:00.";
 
           }
 
@@ -404,6 +463,8 @@ if (!chartDay){
 //***
 function initMap() { 
 
+    console.log(availableBikes[59]);
+
     getLocation();
 
     //initialise variables for directions function
@@ -427,13 +488,12 @@ function initMap() {
     for (let s = 0; s < station.length; s++) { 
 
         //each marker labeled as the number of bikes currently available
-        var label = (availableBikes[s][1]).toString();
         var color; 
 
         //marker color dependent on how many bikes available, 0-9 bikes = red, between 10-19 bikes = yellow, over 20 = green
-        if ((availableBikes[s][1] >= 0) && (availableBikes[s][1] < 10)){
+        if (availableBikes[s][1] >= 0 && availableBikes[s][1] < 10){
             color = "http://maps.google.com/mapfiles/ms/icons/red-dot.png";
-        } else if ((availableBikes[s][1] >= 10) && (availableBikes[s][1] < 20)) {
+        } else if (availableBikes[s][1] >= 10 && parseInt(availableBikes[s][1]) < 20) {
             color = "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png";
         } else {
             color = "http://maps.google.com/mapfiles/ms/icons/green-dot.png";
@@ -444,7 +504,6 @@ function initMap() {
             position: {lat: parseFloat(station[s][5]), lng: parseFloat(station[s][6])},
             map,
             title: station[s][0],
-            // label: {text: label, color: 'black', fontSize: '20px'}, //number of bikes labeled
             icon: { url: color, scaledSize: new google.maps.Size(40, 40)} //colored markers
         });
   
@@ -510,15 +569,11 @@ function initMap() {
                 // Seconds part from the timestamp
                 var seconds = "0" + date.getSeconds();
 
-                // Will display time in 10:30:23 format
-                var formattedTime = hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
 
                 //set the information in the popup window to the most recent data from the query results 
-                infoWindow.setContent('<div><h1>' + bikeData[0][0] + '</div></h1>' + 
+                infoWindow.setContent('<div><h2>' + bikeData[0][0] + '</div></h2>' + 
                 '<div><h3> Available Bikes: ' + bikeData[0][1] + '</div></h3>' + 
                 '<div><h3> Available Stands: ' + bikeData[0][2] + '</div></h3>' + 
-                '<div><h3> Last Updated: ' + formattedTime + '</div></h3>' + 
-                '<div><h3> Now: ' + new Date(now*1000) + '</div></h3>' + 
                 '<div><h3> Last Updated: ' + minutes_ago + ' minutes ago</div></h3>' +
                 '<div><h3> Status: ' + bikeData[0][4] + '</div></h3>'
                 );
@@ -577,19 +632,20 @@ function initMap() {
 //CREATE CHARTS FOR AVERAGE DATA
 //***
                 //create a bar chart of average bikes available per day
-                new Chartist.Bar('.daily-bar', {
+                new Chartist.Bar('#chart1', {
                     labels: weekDays,
                         series: [ averageDailyBikes ]
                     }, 
-                    { width: 520, height: 240
-                    });
+                    // { width: 520, height: 240
+                    );
         
                 //create a line chart of average bikes available per hour, per day selected
-                new Chartist.Line('.hourly-bar', {
+                new Chartist.Line('#chart2', {
                     labels: hourly,
                     series: [ averageHourlyBikes ]
                     },
-                    { width: 520, height: 240, low: 0, showArea: true
+                    { //width: 520, height: 240, 
+                        low: 0, showArea: true
                     });
 
                 document.getElementById("chartHeader1").innerHTML = 'Average Bikes Available Per Day';
@@ -615,8 +671,6 @@ function startDropDown2() {
     //populate dropdown with station names
     for (let m = 0; m < station.length; m++){
         station_choice += "<option value=" + m + ">" + station[m][0] + "</option><br>";
-
-        
     };
 
     station_choice += "</select>";
@@ -630,7 +684,6 @@ function SelectedValue(m) {
     console.log(gMarkers[0].getTitle())
 
     station1 = gMarkers[m.value].getTitle();
-
 
    console.log("new test name", station1);
 }
@@ -698,22 +751,22 @@ function DailyDropDown() {
 //***
 //FUNCTION TO CREATE DROPDOWN WITH A LIST OF HOURS
 //***
-function HourlyDropDown() {
+// function HourlyDropDown() {
         
-    //HTML for dropdown menu, implement 'setHours(hour number)' function on change
-    var hour_choice = "<label for='hour_option'>Choose an hour: </label>"
-    + "<select name='hour_option' id='hour_option' onchange='setHours(this)'>"
-    + "<option value='' disabled selected> ----------------------------------------------- </option><br>";
+//     //HTML for dropdown menu, implement 'setHours(hour number)' function on change
+//     var hour_choice = "<label for='hour_option'>Choose an hour: </label>"
+//     + "<select name='hour_option' id='hour_option' onchange='setHours(this)'>"
+//     + "<option value='' disabled selected> ----------------------------------------------- </option><br>";
      
-    //populate dropdown with hours  
-    for (let t = 0; t < hourly.length; t++){
-        hour_choice += "<option value=" + t + ">" + hourly[t] + "</option><br>";
-    };
+//     //populate dropdown with hours  
+//     for (let t = 0; t < hourly.length; t++){
+//         hour_choice += "<option value=" + t + ">" + hourly[t] + "</option><br>";
+//     };
 
-    hour_choice += "</select>";
+//     hour_choice += "</select>";
 
-    document.getElementById("choose_hour").innerHTML = hour_choice;
-}
+//     document.getElementById("choose_hour").innerHTML = hour_choice;
+// }
 
 //***
 //FUNCTION TO SELECT THE VALUE OF THE STARTING STATION DROPDOWN, THAT TAKES INPUT FROM THE CLICKED MARKER OR
@@ -830,8 +883,8 @@ function buttonClick(toggle){
 function showLocation(position) {
 
     //Random location in Dublin City Centre, change to commented out values for accurate location
-    currentLatitude = 53.333 //position.coords.latitude;
-    currentLongitude = -6.266155 //position.coords.longitude;
+    currentLatitude = 53.344 //position.coords.latitude;
+    currentLongitude = -6.276355 //position.coords.longitude;
     
     //zoom in and centre map around user location
     map.setZoom(12);
@@ -882,13 +935,48 @@ function getLocation(){
     if(navigator.geolocation){
         // timeout at 60000 milliseconds (60 seconds)
         var options = {timeout:60000};
-        navigator.geolocation.getCurrentPosition(showLocation, errorHandler, options);
+        navigator.geolocation.getCurrentPosition(showLocation, showLocation, options);
     } else{
         alert("Sorry, browser does not support geolocation!");
     }
 }
 
+function closestStation(){
 
+    var R = 6371.0710; // Radius of the Earth in km
+    var closest = gMarkers[0]; //initialise first station as closest to compare other stations
+
+    var rlat1 = gMarkers[0].getPosition().lat() * (Math.PI/180); // Convert degrees to radians
+    var rlat2 = currentLatitude * (Math.PI/180); // Convert degrees to radians
+    var difflat = rlat2-rlat1; // Radian difference (latitudes)
+
+    var difflon = (gMarkers[0].getPosition().lng() - currentLongitude) * (Math.PI/180); // Radian difference (longitudes)
+
+    //distance between current location and first station
+    var distance1 = 2 * R * Math.asin(Math.sqrt(Math.sin(difflat/2)*Math.sin(difflat/2)+Math.cos(rlat1)*Math.cos(rlat2)*Math.sin(difflon/2)*Math.sin(difflon/2)));
+
+    //get the distance between each station and current location
+    for (let c = 1; c < gMarkers.length; c++){
+        rlat1 = gMarkers[c].getPosition().lat() * (Math.PI/180); // Convert degrees to radians
+        rlat2 = currentLatitude * (Math.PI/180); // Convert degrees to radians
+        difflat = rlat2-rlat1; // Radian difference (latitudes)
+
+        difflon = (gMarkers[c].getPosition().lng() - currentLongitude) * (Math.PI/180); // Radian difference (longitudes)
+
+        //distance of current location and current station
+        var distance2 = 2 * R * Math.asin(Math.sqrt(Math.sin(difflat/2)*Math.sin(difflat/2)+Math.cos(rlat1)*Math.cos(rlat2)*Math.sin(difflon/2)*Math.sin(difflon/2)));
+
+        //if the distance of the current station is less than the distance of the first station
+        //current station is the closest
+        if (distance2 < distance1){
+            distance1 = distance2;
+            closest = gMarkers[c];
+        }
+    }
+
+    google.maps.event.trigger(closest, 'click'); //click marker of closest station
+
+}
 
 </script> 
 
@@ -902,7 +990,7 @@ async defer>  </script>
 //CALL FUNCTIONS
 //***
 DailyDropDown();
-HourlyDropDown();
+// HourlyDropDown();
 setDays(chartDay);
 
 //function for the weather information for the top right of the page
