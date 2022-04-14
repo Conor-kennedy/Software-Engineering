@@ -9,4 +9,5 @@ dependencies:
   - flask
   - jinja2
   - joblib
+  - mysql
 prefix: /Users/danhowes1/opt/anaconda3/envs/COMP30830
