@@ -6,4 +6,7 @@ dependencies:
   - jupyterlab
   - pandas
   - numpy
+  - flask
+  - jinja2
+  - joblib
 prefix: /Users/danhowes1/opt/anaconda3/envs/COMP30830
