@@ -112,4 +112,4 @@ def predict(station1, days_test, hours_test):
         return result
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000)
