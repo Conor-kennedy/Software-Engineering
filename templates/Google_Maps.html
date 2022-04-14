@@ -441,9 +441,6 @@
                 console.log(predictData);
 
                 document.getElementById("prediction_section_two").innerHTML = "Expected Number of Bikes Available at " + station1 + " for this time and date: " + predictData.bikes;
-
-
-
             })
 
             }
@@ -635,7 +632,7 @@ function initMap() {
                     }
                 });
         
-                // //calculate the average number of bikes for each day of the week
+                //calculate the average number of bikes for each day of the week
                 for (let x = 0; x < weekDays.length; x++) {
                     var sum = dailyBikes[weekDays[x]].reduce((accumulator, curr) => parseInt(accumulator) + parseInt(curr));
                     var len = dailyBikes[weekDays[x]].length;
@@ -706,7 +703,7 @@ function SelectedValue(m) {
 
     station1 = gMarkers[m.value].getTitle();
 
-   console.log("new test name", station1);
+    console.log("new test name", station1);
 }
 
 //***
@@ -734,7 +731,7 @@ function startDropDown() {
 //***
 function destinationDropDown() {
 
-    // //HTML for dropdown menu, implement 'setDestination(marker number)' function on change
+    //HTML for dropdown menu, implement 'setDestination(marker number)' function on change
     var station_choice = "<label for='destination_option'>Destination: </label>"
     + "<select name='destination_option' id='destination_option' onchange='setDestination(this)'>"
     + "<option value='' disabled selected> ----------------------------------------------- </option><br>";
@@ -769,25 +766,6 @@ function DailyDropDown() {
     document.getElementById("choose_day").innerHTML = day_choice;
 }
 
-//***
-//FUNCTION TO CREATE DROPDOWN WITH A LIST OF HOURS
-//***
-// function HourlyDropDown() {
-        
-//     //HTML for dropdown menu, implement 'setHours(hour number)' function on change
-//     var hour_choice = "<label for='hour_option'>Choose an hour: </label>"
-//     + "<select name='hour_option' id='hour_option' onchange='setHours(this)'>"
-//     + "<option value='' disabled selected> ----------------------------------------------- </option><br>";
-     
-//     //populate dropdown with hours  
-//     for (let t = 0; t < hourly.length; t++){
-//         hour_choice += "<option value=" + t + ">" + hourly[t] + "</option><br>";
-//     };
-
-//     hour_choice += "</select>";
-
-//     document.getElementById("choose_hour").innerHTML = hour_choice;
-// }
 
 //***
 //FUNCTION TO SELECT THE VALUE OF THE STARTING STATION DROPDOWN, THAT TAKES INPUT FROM THE CLICKED MARKER OR
@@ -1011,7 +989,6 @@ async defer>  </script>
 //CALL FUNCTIONS
 //***
 DailyDropDown();
-// HourlyDropDown();
 setDays(chartDay);
 
 //function for the weather information for the top right of the page

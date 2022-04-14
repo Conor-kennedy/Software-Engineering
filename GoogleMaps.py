@@ -11,20 +11,10 @@ import joblib
 
 app = Flask(__name__, static_url_path='')
 
-#function to test url works
-@app.route("/hello")
-def hello():
-    return render_template('test.html')
 
 @app.route("/about")
 def About():
     return render_template('about.html')
-
-#function to test code
-@app.route("/")
-def asd():
-    print('hello')
-    return render_template('test2.html')
 
 #function for the home page that shows the map
 @app.route("/map")
