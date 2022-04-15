@@ -177,6 +177,35 @@
                 text-align: center;
         }
 
+
+           /* Responsive navigation menu (for tablet devices) */
+           @media screen and (max-width: 1000px) {
+               
+               .nav a, .nav-right {
+                       float: none;
+                       display: block;
+               }
+                   
+               .nav-centered a {
+                       position: relative;
+                       transform: none;
+                   }
+
+             .topright4 {
+               display: none;
+                 }
+
+             .topright3 {
+                 display: none;
+             }
+
+             .topright2 {
+                 display: none;
+             }
+
+
+       }
+
         </style>
 
     </head>
@@ -225,6 +254,34 @@
         <p><i style="font-size:24px" class="fa">&#xf206;</i>  Created by Daniel Howes, Mark Kavanagh & Conor Kennedy   <i style="font-size:24px" class="fa">&#xf206;</i></p>
         <br>
 </footer>
+
+<script>
+
+//function for the weather information for the top right of the page
+getWeatherInfo();
+
+function getWeatherInfo(){
+    //call weather API from openweathermap
+    var weatherdata;
+    $.getJSON('http://api.openweathermap.org/data/2.5/weather?lat=53.344&lon=-6.2672&appid=5f67f6a5a5d8e18998975ca3111e4dc7&units=metric',function(data){
+        var weather_description = data.weather[0].description;
+        var temperature = data.main.temp;
+        var wind_speed=data.wind.speed;
+        var icon = data.weather[0].icon;
+        var iconUrl = ("<img src='http://openweathermap.org/img/w/" + icon + ".png'>");
+        
+        
+        $("#currentWeather").html(weather_description);
+        $("#currentTemp").html("Temperature: " + temperature + " °C");
+        $("#windspeed").html("Wind Speed: " + wind_speed + " m/s");
+        $("#icon").html(iconUrl);
+    
+    })
+}
+
+
+
+</script>
 
 </body>
 
