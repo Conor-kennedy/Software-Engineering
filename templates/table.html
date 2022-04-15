@@ -192,6 +192,34 @@
                 text-align: center;
         }
 
+         /* Responsive navigation menu (for tablet devices) */
+         @media screen and (max-width: 1000px) {
+               
+               .nav a, .nav-right {
+                       float: none;
+                       display: block;
+               }
+                   
+               .nav-centered a {
+                       position: relative;
+                       transform: none;
+                   }
+
+             .topright4 {
+               display: none;
+                 }
+
+             .topright3 {
+                 display: none;
+             }
+
+             .topright2 {
+                 display: none;
+             }
+
+
+       }
+
         </style>
 
     </head>
@@ -208,6 +236,7 @@
                     <div class="topright3"  id="windspeed"></div>
                     <div class="topright4"  id="icon"></div>
         </div>
+</section>
 
 <!-- Navigation Bar-->
         <div class="nav">
@@ -217,13 +246,13 @@
                 <li><a href="/about">About</a></li>
             </ul>
         </div>
-</section>
 
 
+<br>
 <div class="button">
         <button onClick="window.location.reload();">Refresh Page</button>
 </div>
-
+<br>
 
 <div class="row">
         <div class="col">
