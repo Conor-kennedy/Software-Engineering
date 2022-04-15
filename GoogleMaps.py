@@ -7,6 +7,7 @@ import json
 import pickle
 from pickle import load
 import joblib
+from sqlalchemy import true
 
 
 app = Flask(__name__, static_url_path='')
@@ -112,4 +113,4 @@ def predict(station1, days_test, hours_test):
         return result
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5000, debug=true)
