@@ -93,7 +93,7 @@ def predict(station1, days_test, hours_test):
     weekday = days_test
     hour_time = hours_test
 
-    file_name = 'SoftEngPickle/' + station1 + "_model.pkl"
+    file_name = 'Software-Engineering/SoftEngPickle/' + station1 + "_model.pkl"
 
     new_file_name = file_name
 
