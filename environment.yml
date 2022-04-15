@@ -2,12 +2,14 @@ name: COMP30830
 channels:
   - defaults
 dependencies:
-  - python=3.9
   - jupyterlab
   - pandas
-  - numpy
-  - flask
   - jinja2
   - joblib
   - mysql
-prefix: /Users/danhowes1/opt/anaconda3/envs/COMP30830
+  - python=3.9
+  - numpy
+  - flask
+  - sqlalchemy
+  - scikit-learn
+prefix: /home/ubuntu/miniconda3/envs/COMP30830
