@@ -22,7 +22,7 @@ def About():
 def index():
     stat = station().get_json()
     bikes = stations().get_json()
-    return render_template('Google_Maps.html', stat = stat, bikes = bikes)
+    return render_template('Index.html', stat = stat, bikes = bikes)
 
 # function that loads a page with a list of stations
 @app.route("/stationTable")
